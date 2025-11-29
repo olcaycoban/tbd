@@ -116,6 +116,7 @@ function App() {
             currentUser={currentUser}
             participants={participants}
             onNext={() => setCurrentStep(3)}
+            onViewRecommendations={() => setCurrentStep(5)}
           />
         );
 

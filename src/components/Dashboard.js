@@ -1,9 +1,12 @@
 import React from 'react';
-import { simulateGoogleSearch } from '../utils/networkingAlgorithm';
+import { simulateGoogleSearch, getNetworkingRecommendations } from '../utils/networkingAlgorithm';
 import '../styles/Dashboard.css';
 
-const Dashboard = ({ currentUser, participants, onNext }) => {
+const Dashboard = ({ currentUser, participants, onNext, onViewRecommendations }) => {
   const enrichedProfile = simulateGoogleSearch(currentUser);
+  
+  // Kullanıcıya özel öneriler
+  const recommendations = getNetworkingRecommendations(currentUser, participants, 6);
 
   const stats = {
     totalParticipants: participants.length,
@@ -137,6 +140,65 @@ const Dashboard = ({ currentUser, participants, onNext }) => {
           </div>
         </div>
 
+        {/* Size Özel Eşleşmeler */}
+        <div className="dashboard-card recommended-matches">
+          <h2>🤝 Sizin İçin Önerilen Eşleşmeler</h2>
+          <p className="section-desc">İlgi alanlarınıza göre en uyumlu katılımcılar</p>
+          <div className="matches-grid">
+            {recommendations.slice(0, 3).map((rec, idx) => (
+              <div key={idx} className="match-card">
+                <div className="match-score-badge">
+                  {rec.score}
+                </div>
+                <div className="match-avatar">
+                  {rec.participant.isim.charAt(0)}
+                </div>
+                <h4>{rec.participant.isim}</h4>
+                <p className="match-role">{rec.participant.meslek}</p>
+                <p className="match-org">{rec.participant.kurum}</p>
+                {rec.commonInterests.length > 0 && (
+                  <div className="match-common">
+                    <strong>Ortak:</strong>
+                    <div className="match-tags">
+                      {rec.commonInterests.slice(0, 2).map((interest, i) => (
+                        <span key={i} className="match-tag">{interest}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <button className="btn-see-all" onClick={onViewRecommendations}>
+            Tüm Önerileri Gör ({recommendations.length} kişi)
+          </button>
+        </div>
+
+        {/* Kişiselleştirilmiş Öneriler */}
+        <div className="dashboard-card personalized-tips">
+          <h2>💡 Sizin İçin Öneriler</h2>
+          <div className="tips-list">
+            <div className="tip-item">
+              <span className="tip-icon">🎯</span>
+              <div className="tip-text">
+                <strong>{recommendations[0]?.participant.isim}</strong> ile ortak ilgi alanınız: <strong>{recommendations[0]?.commonInterests[0]}</strong>
+              </div>
+            </div>
+            <div className="tip-item">
+              <span className="tip-icon">🏛️</span>
+              <div className="tip-text">
+                <strong>{stats.totalInstitutions}</strong> farklı kurumdan katılımcı var. Farklı deneyimler öğrenin!
+              </div>
+            </div>
+            <div className="tip-item">
+              <span className="tip-icon">📊</span>
+              <div className="tip-text">
+                Deneyim seviyeniz (<strong>{currentUser.deneyimYili} yıl</strong>) ortalama üzerinde. Mentorluk fırsatları değerlendirin!
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Hızlı Erişim */}
         <div className="dashboard-card quick-access">
           <h2>🚀 Hızlı Erişim</h2>
@@ -169,12 +231,6 @@ const Dashboard = ({ currentUser, participants, onNext }) => {
             </p>
           </div>
         </div>
-      </div>
-
-      <div className="dashboard-actions">
-        <button className="btn btn-primary btn-large" onClick={onNext}>
-          Network Analizine Geç →
-        </button>
       </div>
     </div>
   );
