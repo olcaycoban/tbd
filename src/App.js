@@ -163,22 +163,6 @@ function App() {
 
   return (
     <div className="App">
-      {currentStep > 0 && (
-        <div className="progress-bar">
-          <div className="progress-steps">
-            {steps.slice(1).map((step, index) => (
-              <div 
-                key={step.id} 
-                className={`progress-step ${currentStep >= step.id ? 'active' : ''} ${currentStep === step.id ? 'current' : ''}`}
-              >
-                <div className="step-number">{index + 1}</div>
-                <div className="step-name">{step.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
       <main className="main-content">
         {renderContent()}
       </main>
